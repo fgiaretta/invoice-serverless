@@ -79,3 +79,36 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+
+
+
+#resources:
+  # Resources:
+  #   DynamoDbTable:
+  #     Type: 'AWS::DynamoDB::Table'
+  #     DeletionPolicy: Retain
+  #     Properties:
+  #       AttributeDefinitions:
+  #         -
+  #           AttributeName: id
+  #           AttributeType: S
+  #         -
+  #           AttributeName: invoiceNumber
+  #           AttributeType: S
+  #       KeySchema:
+  #         -
+  #           AttributeName: id
+  #           KeyType: HASH
+  #       ProvisionedThroughput:
+  #         ReadCapacityUnits: 1
+  #         WriteCapacityUnits: 1
+  #       TableName: ${self:provider.environment.DYNAMODB_TABLE}
+  #       GlobalSecondaryIndexes:
+  #         -
+  #           IndexName: InvoiceNumberIndex
+  #           KeySchema:
+  #             -
+  #               AttributeName: invoiceNumber
+  #               KeyType: HASH
+  #           Projection:
+  #             ProjectionType: ALL

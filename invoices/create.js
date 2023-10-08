@@ -1,49 +1,60 @@
 'use strict';
 
 const uuid = require('uuid');
-const AWS = require('aws-sdk');
+const { createInvoice } = require('./database.js');
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
-module.exports.create = (event, context, callback) => {
-  const timestamp = new Date().getTime();
-  const data = JSON.parse(event.body);
-  if (typeof data.text !== 'string') {
+function validateData(data) {
+  if (!data.invoiceNumber || !data.client || !data.client.name || !data.client.phone || !data.client.email || !data.items || !data.dueDate || !data.status) {
     console.error('Validation Failed');
-    callback(null, {
+    return {
       statusCode: 400,
       headers: { 'Content-Type': 'text/plain' },
-      body: 'Couldn\'t create the todo item.',
-    });
-    return;
+      body: 'Couldn\'t create the invoice item.',
+    };
+  }
+}
+
+module.exports.create = async (event, context) => {
+  const timestamp = new Date().getTime();
+  const data = JSON.parse(event.body);
+
+  const validationError = validateData(data);
+  if (validationError) {
+    return validationError;
   }
 
   const params = {
-    TableName: process.env.DYNAMODB_TABLE,
-    Item: {
-      id: uuid.v1(),
-      text: data.text,
-      checked: false,
-      createdAt: timestamp,
-      updatedAt: timestamp,
+    id: uuid.v1(),
+    invoiceNumber: data.invoiceNumber,
+    client: {
+      name: data.client.name,
+      phone: data.client.phone,
+      email: data.client.email,
     },
+    items: data.items.map(item => ({
+      value: item.value,
+      description: item.description,
+      time: item.time
+    })),
+    dueDate: data.dueDate,
+    status: data.status,
+    createdAt: timestamp,
+    updatedAt: timestamp,
   };
 
-  dynamoDb.put(params, (error) => {
-    if (error) {
-      console.error(error);
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Could not create invoice.',
-      });
-      return;
-    }
-
+  try {
+    const createdInvoice = await createInvoice(params);
     const response = {
       statusCode: 200,
-      body: JSON.stringify(params.Item),
+      body: JSON.stringify(createdInvoice),
     };
-    callback(null, response);
-  });
+    return response;
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: error.statusCode || 501,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'Could not create invoice.',
+    };
+  }
 };

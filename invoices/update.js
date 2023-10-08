@@ -1,59 +1,43 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const { updateInvoice } = require('./database');
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+function validateData(data) {
+  if (!data.duedate || !data.status) {
+    console.error('Validation Failed');
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'Couldn\'t update the invoice item.',
+    };
+  }
+}
 
-module.exports.update = (event, context, callback) => {
+module.exports.update = async (event, context) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
 
-  // validation
-  if (typeof data.text !== 'string' || typeof data.checked !== 'boolean') {
-    console.error('Validation Failed');
-    callback(null, {
-      statusCode: 400,
-      headers: { 'Content-Type': 'text/plain' },
-      body: 'Couldn\'t update the todo item.',
-    });
-    return;
+  const validationError = validateData(data);
+  if (validationError) {
+    return validationError;
   }
 
-  const params = {
-    TableName: process.env.DYNAMODB_TABLE,
-    Key: {
-      id: event.pathParameters.id,
-    },
-    ExpressionAttributeNames: {
-      '#todo_text': 'text',
-    },
-    ExpressionAttributeValues: {
-      ':text': data.text,
-      ':checked': data.checked,
-      ':updatedAt': timestamp,
-    },
-    UpdateExpression: 'SET #todo_text = :text, checked = :checked, updatedAt = :updatedAt',
-    ReturnValues: 'ALL_NEW',
-  };
+  const id = event.pathParameters.id;
+  const { duedate, status } = data;
 
-  // update the todo in the database
-  dynamoDb.update(params, (error, result) => {
-    // handle potential errors
-    if (error) {
-      console.error(error);
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t fetch the todo item.',
-      });
-      return;
-    }
-
-    // create a response
+  try {
+    const updatedInvoice = await updateInvoice(id, { duedate, status, updatedAt: timestamp });
     const response = {
       statusCode: 200,
-      body: JSON.stringify(result.Attributes),
+      body: JSON.stringify(updatedInvoice),
     };
-    callback(null, response);
-  });
+    return response;
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: error.statusCode || 501,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'Couldn\'t update the invoice item.',
+    };
+  }
 };
