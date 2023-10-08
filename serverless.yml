@@ -6,7 +6,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    DYNAMODB_TABLE: invoices
   iam:
     role:
       statements:
@@ -18,52 +18,52 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+          Resource: "arn:aws:dynamodb:us-east-1:*:table/invoices"
 
 functions:
   create:
-    handler: todos/create.create
+    handler: invoices/create.create
     events:
       - http:
-          path: todos
+          path: invoices
           method: post
           cors: true
 
   list:
-    handler: todos/list.list
+    handler: invoices/list.list
     events:
       - http:
-          path: todos
+          path: invoices
           method: get
           cors: true
 
   get:
-    handler: todos/get.get
+    handler: invoices/get.get
     events:
       - http:
-          path: todos/{id}
+          path: invoices/{id}
           method: get
           cors: true
 
   update:
-    handler: todos/update.update
+    handler: invoices/update.update
     events:
       - http:
-          path: todos/{id}
+          path: invoices/{id}
           method: put
           cors: true
 
   delete:
-    handler: todos/delete.delete
+    handler: invoices/delete.delete
     events:
       - http:
-          path: todos/{id}
+          path: invoices/{id}
           method: delete
           cors: true
 
 resources:
   Resources:
-    TodosDynamoDbTable:
+    DynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
