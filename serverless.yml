@@ -24,10 +24,10 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-            - sns:Publish # add SNS publish permission
+            - sns:Publish
           Resource:
             - "arn:aws:dynamodb:us-east-1:*:table/invoices"
-            - "arn:aws:sns:us-east-1:*:*" # add SNS resource
+            - "arn:aws:sns:us-east-1:*:*"
 
         - Effect: Allow
           Action:
