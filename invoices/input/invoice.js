@@ -13,7 +13,7 @@ function validateEdit(dueDate, status) {
     validateStatus(status);
 }
 
-function validateAdd(data) {
+function validateInput(data) {
     if (
         !data.invoiceNumber ||
         !data.client ||
@@ -31,5 +31,5 @@ function validateAdd(data) {
 }
 module.exports = {
     validateEdit,
-    validateAdd
+    validateInput
 };

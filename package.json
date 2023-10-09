@@ -4,8 +4,17 @@
   "description": "Serverless CRUD service exposing a REST HTTP interface",
   "author": "",
   "license": "MIT",
+  "scripts": {
+    "test": "mocha test/**/*.test.js"
+  },
   "dependencies": {
     "aws-sdk": "^2.1472.0",
     "uuid": "^2.0.3"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "serverless-offline": "^13.2.0",
+    "sinon": "^16.1.0"
   }
 }
