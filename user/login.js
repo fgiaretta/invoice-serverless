@@ -18,7 +18,10 @@ module.exports.handler = async (event) => {
 
         return {
             statusCode: 200,
-            body: JSON.stringify(AuthenticationResult),
+            body: JSON.stringify({
+                message: 'Success',
+                token: AuthenticationResult.IdToken,
+            }),
         };
     } catch (error) {
         return {

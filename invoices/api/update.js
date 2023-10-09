@@ -7,6 +7,7 @@ module.exports.update = async (event, context) => {
   try {
     const body = JSON.parse(event.body);
     const id = event.pathParameters.id;
+    const email = event.requestContext.authorizer.claims.email;
 
     const updatedInvoice = await updateInvoice(id, body, dynamodb);
 

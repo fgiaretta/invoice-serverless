@@ -5,7 +5,7 @@ const { listInvoice } = require('../core/list.js');
 
 module.exports.list = async (event, context, callback) => {
   try {
-    const email = "johndoe@example.com"
+    const email = event.requestContext.authorizer.claims.email;
 
     const invoices = await listInvoice(email, dynamodb);
     

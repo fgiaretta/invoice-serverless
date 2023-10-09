@@ -6,7 +6,7 @@ const { getInvoice } = require('../core/get.js');
 module.exports.get = async (event, context) => {
   try {
     const id = event.pathParameters.id;
-    // const email = event.requestContext.authorizer.claims.email;
+    const email = event.requestContext.authorizer.claims.email;
 
     const invoice = await getInvoice(id, dynamodb);
 

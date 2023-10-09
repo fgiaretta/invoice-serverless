@@ -63,6 +63,12 @@ functions:
           path: invoices
           method: post
           cors: true
+          authorizer:
+            name: authorizer
+            type: COGNITO_USER_POOLS
+            arn: !GetAtt CognitoUserPool.Arn
+            claims:
+              - email
 
   list:
     handler: invoices/api/list.list
@@ -71,6 +77,12 @@ functions:
           path: invoices
           method: get
           cors: true
+          authorizer:
+            name: authorizer
+            type: COGNITO_USER_POOLS
+            arn: !GetAtt CognitoUserPool.Arn
+            claims:
+              - email
 
   get:
     handler: invoices/api/get.get
@@ -93,6 +105,12 @@ functions:
           path: invoices/{id}
           method: put
           cors: true
+          authorizer:
+            name: authorizer
+            type: COGNITO_USER_POOLS
+            arn: !GetAtt CognitoUserPool.Arn
+            claims:
+              - email
 
   delete:
     handler: invoices/api/delete.delete
@@ -101,6 +119,12 @@ functions:
           path: invoices/{id}
           method: delete
           cors: true
+          authorizer:
+            name: authorizer
+            type: COGNITO_USER_POOLS
+            arn: !GetAtt CognitoUserPool.Arn
+            claims:
+              - email
 
 resources:
   Resources:
