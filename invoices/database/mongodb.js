@@ -82,8 +82,23 @@ const database = {
             console.error(error);
             throw new Error('Could not get invoices.');
         }
-    }
+    },
 
+    deleteInvoice: async (id) => {
+        try {
+            await dynamoDb.delete({
+                TableName: process.env.DYNAMODB_TABLE,
+                Key: {
+                    id: id,
+                },
+            }).promise();
+            
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Could not delete invoice.');
+        }
+    },
 };
 
 module.exports = database;

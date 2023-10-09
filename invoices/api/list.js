@@ -8,11 +8,11 @@ module.exports.list = async (event, context, callback) => {
     const email = "johndoe@example.com"
 
     const invoices = await listInvoice(email, mongodb);
-    const response = {
+    
+    return {
       statusCode: 200,
       body: JSON.stringify(invoices),
     };
-    return response;
   } catch (error) {
     console.error(error);
     return {

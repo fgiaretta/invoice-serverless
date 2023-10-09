@@ -1,32 +1,26 @@
 'use strict';
 
-const AWS = require('aws-sdk');
+const mongodb = require('../database/mongodb.js');
+const { getInvoice } = require('../core/get.js');
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+module.exports.get = async (event, context) => {
+  try {
+    const id = event.pathParameters.id;
+    // const email = event.requestContext.authorizer.claims.email;
 
-module.exports.get = (event, context, callback) => {
-  const params = {
-    TableName: process.env.DYNAMODB_TABLE,
-    Key: {
-      id: event.pathParameters.id,
-    },
-  };
+    const invoice = await getInvoice(id, mongodb);
 
-  dynamoDb.get(params, (error, result) => {
-    if (error) {
-      console.error(error);
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Could not fetch invoice.',
-      });
-      return;
-    }
-
-    const response = {
+    return {
       statusCode: 200,
-      body: JSON.stringify(result.Item),
+      body: JSON.stringify(invoice)
     };
-    callback(null, response);
-  });
+
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: error.statusCode || 501,
+      headers: { 'Content-Type': 'text/plain' },
+      body: error.message,
+    };
+  }
 };

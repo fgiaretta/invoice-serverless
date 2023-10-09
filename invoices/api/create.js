@@ -8,11 +8,11 @@ module.exports.create = async (event, context) => {
     const data = JSON.parse(event.body);
     
     const createdInvoice = await createInvoice(data, mongodb);
-    const response = {
+
+    return {
       statusCode: 200,
       body: JSON.stringify(createdInvoice),
     };
-    return response;
   } catch (error) {
     console.error(error);
     return {

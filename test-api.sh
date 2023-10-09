@@ -9,7 +9,7 @@ mock_invoice='{
     "client": {
         "name": "John Doe",
         "phone": "+1234567890",
-        "email": "lala@example.com"
+        "email": "johndoe@example.com"
     },
     "items": [
         {
@@ -62,22 +62,33 @@ delete_invoice() {
     echo "$response"
 }
 
-create_invoice "$mock_invoice"
+echo -e "\n\n\n***************************************\n"
+echo -e "*** Creating new invoice ***\n"
+create_response=$(create_invoice "$mock_invoice")
+echo "$create_response" | jq
 
 list_response=$(list_invoices)
 first_id=$(echo "$list_response" | jq -r '.[0].id')
 count=$(echo "$list_response" | jq length)
 
-echo "Number of items in list: $count"
+echo -e "\n\n\n***************************************\n"
+echo -e "*** Number of items in list: $count ***"
 
-echo "Getting invoice with ID: $first_id"
-get_invoice "$first_id"
+echo -e "\n***************************************\n"
+echo -e "*** Getting invoice with ID: $first_id *** \n"
+get_invoice "$first_id" | jq
 
-echo "Updating invoice with ID: $first_id"
+echo -e "\n\n\n***************************************\n"
+echo -e "*** Updating invoice with ID: $first_id *** \n"
 update_invoice "$first_id" '{
     "status": "paid",
     "dueDate": "2023-12-31"
-}'
+}' | jq
 
-echo "Deleting invoice with ID: $first_id"
-delete_invoice "$first_id"
+echo -e "\n\n\n***************************************\n"
+echo -e "*** Getting updated invoice with ID: $first_id ***\n"
+get_invoice "$first_id" | jq
+
+echo -e "\n\n\n***************************************\n"
+echo -e "*** Deleting invoice with ID: $first_id ***\n"
+delete_invoice "$first_id" | jq
