@@ -1,9 +1,11 @@
-"use strict";
+'use strict';
 
 const { validateEdit } = require("../input/invoice.js");
 
-module.exports.updateInvoice = async (id, dueDate, status, db) => {
+module.exports.updateInvoice = async (id, data, db) => {
   const timestamp = new Date().getTime();
+
+  const { dueDate, status } = data;
 
   const validationError = validateEdit(dueDate, status);
   if (validationError) {

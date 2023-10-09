@@ -1,7 +1,6 @@
 #!/bin/bash
 
-
-# API_BASE_URL="http://localhost:3000/dev/"
+# API_BASE_URL="http://localhost:3000/dev"
 API_BASE_URL="https://la1j3jdzu1.execute-api.us-east-1.amazonaws.com/dev"
 
 mock_invoice='{
