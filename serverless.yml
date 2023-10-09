@@ -10,6 +10,8 @@ provider:
   runtime: nodejs18.x
   environment:
     DYNAMODB_TABLE: invoices
+    COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
+    COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
   iam:
     role:
       statements:
@@ -22,8 +24,38 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource: "arn:aws:dynamodb:us-east-1:*:table/invoices"
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminInitiateAuth
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminSetUserPassword
+          Resource: "*"
 
 functions:
+  login:
+    handler: user/login.handler
+    events:
+      - http:
+          path: user/login
+          method: post
+          cors: true
+
+  confirm:
+    handler: user/confirm.handler
+    events:
+      - http:
+          path: user/confirm
+          method: post
+          cors: true
+
+  signup:
+    handler: user/signup.handler
+    events:
+      - http:
+          path: user/signup
+          method: post
+          cors: true
+
   create:
     handler: invoices/api/create.create
     events:
@@ -47,6 +79,12 @@ functions:
           path: invoices/{id}
           method: get
           cors: true
+          authorizer:
+            name: authorizer
+            type: COGNITO_USER_POOLS
+            arn: !GetAtt CognitoUserPool.Arn
+            claims:
+              - email
 
   update:
     handler: invoices/api/update.update
@@ -82,3 +120,23 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: user-pool
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+    
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: user-pool-client
+        UserPoolId:
+          Ref: CognitoUserPool
+        GenerateSecret: false
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+          - USER_PASSWORD_AUTH
