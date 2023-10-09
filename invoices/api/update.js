@@ -1,6 +1,7 @@
 "use strict";
 
 const dynamodb = require("../database/dynamodb.js");
+const sns = require("../messenger/sns.js");
 const { updateInvoice } = require("../core/update.js");
 
 module.exports.update = async (event, context) => {
@@ -9,7 +10,7 @@ module.exports.update = async (event, context) => {
     const id = event.pathParameters.id;
     const owner = event.requestContext.authorizer.claims.email;
 
-    const updatedInvoice = await updateInvoice(id, owner, body, dynamodb);
+    const updatedInvoice = await updateInvoice(id, owner, body, sns, dynamodb);
 
     return {
       statusCode: 200,

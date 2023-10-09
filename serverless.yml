@@ -12,6 +12,7 @@ provider:
     DYNAMODB_TABLE: invoices
     COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
     COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
+    SNS_TOPIC_ARN_NOTIFY_USERS: !Ref SNSNotifyUsersInvoices
   iam:
     role:
       statements:
@@ -23,7 +24,11 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource: "arn:aws:dynamodb:us-east-1:*:table/invoices"
+            - sns:Publish # add SNS publish permission
+          Resource:
+            - "arn:aws:dynamodb:us-east-1:*:table/invoices"
+            - "arn:aws:sns:us-east-1:*:*" # add SNS resource
+
         - Effect: Allow
           Action:
             - cognito-idp:AdminInitiateAuth
@@ -164,3 +169,13 @@ resources:
         ExplicitAuthFlows:
           - ADMIN_NO_SRP_AUTH
           - USER_PASSWORD_AUTH
+
+    SNSNotifyUsersInvoices:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "Notify users"
+        TopicName: "sns-topic-notify-users-invoices"
+        
+  Outputs:
+    SNSNotifyUsersInvoicesArn:
+      Value: !Ref SNSNotifyUsersInvoices

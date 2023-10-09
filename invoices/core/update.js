@@ -2,7 +2,7 @@
 
 const { validateEdit } = require("../input/invoice.js");
 
-module.exports.updateInvoice = async (id, owner, data, db) => {
+module.exports.updateInvoice = async (id, owner, data, messenger, db) => {
   const timestamp = new Date().getTime();
 
   const { dueDate, status } = data;
@@ -19,11 +19,18 @@ module.exports.updateInvoice = async (id, owner, data, db) => {
       throw new Error('Invoice not found or you are not the owner');
     }
 
-    return await db.updateInvoice(id, {
+    const updatedInvoice = await db.updateInvoice(id, {
       dueDate,
       status,
       updatedAt: timestamp,
     });
+
+    if (existingInvoice.status !== updatedInvoice.status) {
+      const message = `The status of invoice ${id} has been updated from [${existingInvoice.status}] to [${updatedInvoice.status}].`;
+      await messenger.sendMessage(message);
+    }
+
+    return updatedInvoice;
   } catch (error) {
     console.error(error);
     throw new Error("Couldn't update the invoice item.");
