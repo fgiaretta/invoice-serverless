@@ -1,4 +1,4 @@
-service: invoice-serverless
+service: invoices-serverless
 
 frameworkVersion: "3"
 
@@ -22,7 +22,7 @@ provider:
 
 functions:
   create:
-    handler: invoices/create.create
+    handler: invoices/api/create.create
     events:
       - http:
           path: invoices
@@ -30,7 +30,7 @@ functions:
           cors: true
 
   list:
-    handler: invoices/list.list
+    handler: invoices/api/list.list
     events:
       - http:
           path: invoices
@@ -38,7 +38,7 @@ functions:
           cors: true
 
   get:
-    handler: invoices/get.get
+    handler: invoices/api/get.get
     events:
       - http:
           path: invoices/{id}
@@ -46,7 +46,7 @@ functions:
           cors: true
 
   update:
-    handler: invoices/update.update
+    handler: invoices/api/update.update
     events:
       - http:
           path: invoices/{id}
@@ -54,7 +54,7 @@ functions:
           cors: true
 
   delete:
-    handler: invoices/delete.delete
+    handler: invoices/api/delete.delete
     events:
       - http:
           path: invoices/{id}
@@ -65,7 +65,7 @@ resources:
   Resources:
     DynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      # DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
           -
@@ -79,36 +79,3 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
-
-
-
-#resources:
-  # Resources:
-  #   DynamoDbTable:
-  #     Type: 'AWS::DynamoDB::Table'
-  #     DeletionPolicy: Retain
-  #     Properties:
-  #       AttributeDefinitions:
-  #         -
-  #           AttributeName: id
-  #           AttributeType: S
-  #         -
-  #           AttributeName: invoiceNumber
-  #           AttributeType: S
-  #       KeySchema:
-  #         -
-  #           AttributeName: id
-  #           KeyType: HASH
-  #       ProvisionedThroughput:
-  #         ReadCapacityUnits: 1
-  #         WriteCapacityUnits: 1
-  #       TableName: ${self:provider.environment.DYNAMODB_TABLE}
-  #       GlobalSecondaryIndexes:
-  #         -
-  #           IndexName: InvoiceNumberIndex
-  #           KeySchema:
-  #             -
-  #               AttributeName: invoiceNumber
-  #               KeyType: HASH
-  #           Projection:
-  #             ProjectionType: ALL

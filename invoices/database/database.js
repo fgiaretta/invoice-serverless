@@ -27,7 +27,7 @@ module.exports.createInvoice = async (data) => {
     }
 };
 
-module.exports.editInvoice = async (id, data) => {
+module.exports.updateInvoice = async (id, data) => {
     const timestamp = new Date().getTime();
 
     const params = {

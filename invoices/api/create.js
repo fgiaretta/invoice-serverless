@@ -1,26 +1,21 @@
 'use strict';
 
 const uuid = require('uuid');
-const { createInvoice } = require('./database.js');
+const { createInvoice } = require('../database/database.js');
+const { validateAdd } = require('../input/invoice.js');
 
-function validateData(data) {
-  if (!data.invoiceNumber || !data.client || !data.client.name || !data.client.phone || !data.client.email || !data.items || !data.dueDate || !data.status) {
-    console.error('Validation Failed');
-    return {
-      statusCode: 400,
-      headers: { 'Content-Type': 'text/plain' },
-      body: 'Couldn\'t create the invoice item.',
-    };
-  }
-}
 
 module.exports.create = async (event, context) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
 
-  const validationError = validateData(data);
+  const validationError = validateAdd(data);
   if (validationError) {
-    return validationError;
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'text/plain' },
+      body: validationError.message,
+    };
   }
 
   const params = {
