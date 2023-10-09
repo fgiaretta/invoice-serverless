@@ -1,17 +1,17 @@
 'use strict';
 
-const mongodb = require('../database/mongodb.js');
+const dynamodb = require('../database/dynamodb.js');
 const { deleteInvoice } = require('../core/delete.js');
 
 module.exports.delete = async (event, context) => {
   try {
     const id = event.pathParameters.id
     
-    const deletedInvoice = await deleteInvoice(id, mongodb);
+    const deletedInvoice = await deleteInvoice(id, dynamodb);
 
     return {
       statusCode: 200,
-      body: JSON.stringify(deletedInvoice),
+      body: JSON.stringify({status: deletedInvoice ? 'success' : 'failure' }),
     };
   } catch (error) {
     console.error(error);

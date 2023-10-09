@@ -1,6 +1,6 @@
 "use strict";
 
-const mongodb = require("../database/mongodb.js");
+const dynamodb = require("../database/dynamodb.js");
 const { updateInvoice } = require("../core/update.js");
 
 module.exports.update = async (event, context) => {
@@ -8,7 +8,7 @@ module.exports.update = async (event, context) => {
     const body = JSON.parse(event.body);
     const id = event.pathParameters.id;
 
-    const updatedInvoice = await updateInvoice(id, body, mongodb);
+    const updatedInvoice = await updateInvoice(id, body, dynamodb);
 
     return {
       statusCode: 200,

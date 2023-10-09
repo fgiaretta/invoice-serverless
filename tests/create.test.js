@@ -2,7 +2,7 @@
 
 const sinon = require('sinon');
 const { expect } = require('chai');
-const { createInvoice } = require('../invoices/database/mongodb.js');
+const { createInvoice } = require('../invoices/database/dynamodb.js');
 const { validateInput } = require('../invoices/input/invoice.js');
 
 describe('createInvoice', () => {

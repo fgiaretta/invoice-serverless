@@ -1,13 +1,13 @@
 'use strict';
 
-const mongodb = require('../database/mongodb.js');
+const dynamodb = require('../database/dynamodb.js');
 const { createInvoice } = require('../core/create.js');
 
 module.exports.create = async (event, context) => {
   try {
     const data = JSON.parse(event.body);
     
-    const createdInvoice = await createInvoice(data, mongodb);
+    const createdInvoice = await createInvoice(data, dynamodb);
 
     return {
       statusCode: 200,

@@ -1,6 +1,6 @@
 'use strict';
 
-const mongodb = require('../database/mongodb.js');
+const dynamodb = require('../database/dynamodb.js');
 const { getInvoice } = require('../core/get.js');
 
 module.exports.get = async (event, context) => {
@@ -8,7 +8,7 @@ module.exports.get = async (event, context) => {
     const id = event.pathParameters.id;
     // const email = event.requestContext.authorizer.claims.email;
 
-    const invoice = await getInvoice(id, mongodb);
+    const invoice = await getInvoice(id, dynamodb);
 
     return {
       statusCode: 200,

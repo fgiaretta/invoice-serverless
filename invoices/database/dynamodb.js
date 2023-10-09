@@ -34,7 +34,7 @@ const database = {
             ExpressionAttributeValues: {
                 ':dueDate': data.dueDate,
                 ':status': data.status,
-                ':updatedAt': timestamp,
+                ':updatedAt': data.updatedAt,
             },
             ReturnValues: 'ALL_NEW',
         };
