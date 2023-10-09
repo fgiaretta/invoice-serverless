@@ -21,3 +21,5 @@ signup() {
     response=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"email\":\"$email\",\"password\":\"$password\"}" "$API_BASE_URL/user/signup")
     echo "$response"
 }
+
+signup "$EMAIL" "$PASSWORD"

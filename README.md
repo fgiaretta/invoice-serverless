@@ -70,10 +70,10 @@ To use these scripts, follow these steps:
 
   ```bash
   ./signup.sh API_BASE_URL EMAIL PASSWORD
-  ./confirm.sh API_BASE_URL EMAIL PASSWORD
+  ./confirm.sh API_BASE_URL EMAIL CODE
   ./crud.sh API_BASE_URL EMAIL PASSWORD
   ```
-  Replace `API_BASE_URL`, `INVOICE_DATA`, and `INVOICE_ID` with the appropriate values.
+  Replace `API_BASE_URL`, `EMAIL`, `PASSWORD` and `CODE` with the appropriate values.
 
 ## AWS SNS Subscribe
 
