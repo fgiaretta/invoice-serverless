@@ -4,9 +4,10 @@
 API_BASE_URL="https://la1j3jdzu1.execute-api.us-east-1.amazonaws.com/dev"
 
 # Set email and password variables
+# EMAIL="fernando@wpp.sh"
 EMAIL="fgiaretta42@gmail.com"
 PASSWORD="paSsword123#"
-CODE="875202"
+CODE="115376"
 
 signup() {
     local email="$1"
@@ -27,25 +28,6 @@ confirm() {
     local code="$2"
     response=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"email\":\"$email\",\"code\":\"$code\"}" "$API_BASE_URL/user/confirm")
     echo "$response"
-}
-
-decode_jwt() {
-  local token="$1"
-  local header
-  local payload
-
-  # Split the JWT token into its header and payload parts
-  header=$(echo "$token" | cut -d'.' -f1 | base64 -d 2>/dev/null | jq . 2>/dev/null)
-  payload=$(echo "$token" | cut -d'.' -f2 | base64 -d 2>/dev/null | jq . 2>/dev/null)
-
-  if [ -n "$header" ] && [ -n "$payload" ]; then
-    echo "Header:"
-    echo "$header"
-    echo "Payload:"
-    echo "$payload"
-  else
-    echo "Invalid JWT token."
-  fi
 }
 
 mock_invoice='{
@@ -107,8 +89,11 @@ delete_invoice() {
 }
 
 
+echo -e "\n\n\n***************************************\n"
+echo -e "*** Logging in  ***\n"
 response=$(login "$EMAIL" "$PASSWORD")
 token=$(echo "$response" | jq -r '.token')
+
 
 
 echo -e "\n\n\n***************************************\n"
@@ -116,16 +101,23 @@ echo -e "*** Creating new invoice ***\n"
 create_response=$(create_invoice "$mock_invoice" "$token")
 echo "$create_response" | jq
 
+
+
 list_response=$(list_invoices "$token")
 first_id=$(echo "$list_response" | jq -r '.[0].id')
 count=$(echo "$list_response" | jq length)
-
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Number of items in list: $count ***"
+
+
+
 
 echo -e "\n***************************************\n"
 echo -e "*** Getting invoice with ID: $first_id *** \n"
 get_invoice "$first_id" "$token" | jq
+
+
+
 
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Updating invoice with ID: $first_id *** \n"
@@ -134,9 +126,15 @@ update_invoice "$first_id" "$token" '{
     "dueDate": "2023-12-31"
 }' | jq
 
+
+
+
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Getting updated invoice with ID: $first_id ***\n"
 get_invoice "$first_id" "$token" | jq
+
+
+
 
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Deleting invoice with ID: $first_id ***\n"

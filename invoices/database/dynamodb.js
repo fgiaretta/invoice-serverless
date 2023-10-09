@@ -68,7 +68,10 @@ const database = {
     listInvoices: async (email) => {
         const params = {
             TableName: process.env.DYNAMODB_TABLE,
-            FilterExpression: 'client.email = :email',
+            FilterExpression: '#owner = :email',
+            ExpressionAttributeNames: {
+                '#owner': 'owner',
+            },
             ExpressionAttributeValues: {
                 ':email': email,
             },

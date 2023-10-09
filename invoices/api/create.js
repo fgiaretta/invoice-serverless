@@ -6,9 +6,9 @@ const { createInvoice } = require('../core/create.js');
 module.exports.create = async (event, context) => {
   try {
     const data = JSON.parse(event.body);
-    const email = event.requestContext.authorizer.claims.email;
+    const owner = event.requestContext.authorizer.claims.email;
 
-    data.owner = email;
+    data.owner = owner;
 
     const createdInvoice = await createInvoice(data, dynamodb);
 

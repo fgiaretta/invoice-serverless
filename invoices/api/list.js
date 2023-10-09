@@ -5,9 +5,9 @@ const { listInvoice } = require('../core/list.js');
 
 module.exports.list = async (event, context, callback) => {
   try {
-    const email = event.requestContext.authorizer.claims.email;
+    const owner = event.requestContext.authorizer.claims.email;
 
-    const invoices = await listInvoice(email, dynamodb);
+    const invoices = await listInvoice(owner, dynamodb);
     
     return {
       statusCode: 200,

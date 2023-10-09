@@ -14,6 +14,7 @@ module.exports.createInvoice = async (data, db) => {
     const params = {
         id: uuid.v1(),
         invoiceNumber: data.invoiceNumber,
+        owner: data.owner,
         client: {
             name: data.client.name,
             phone: data.client.phone,

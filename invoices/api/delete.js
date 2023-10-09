@@ -6,9 +6,9 @@ const { deleteInvoice } = require('../core/delete.js');
 module.exports.delete = async (event, context) => {
   try {
     const id = event.pathParameters.id;
-    const email = event.requestContext.authorizer.claims.email;
+    const owner = event.requestContext.authorizer.claims.email;
     
-    const deletedInvoice = await deleteInvoice(id, dynamodb);
+    const deletedInvoice = await deleteInvoice(id, owner, dynamodb);
 
     return {
       statusCode: 200,
