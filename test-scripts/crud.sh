@@ -1,20 +1,13 @@
 #!/bin/bash
 
-# API_BASE_URL="http://localhost:3000/dev"
-API_BASE_URL="https://la1j3jdzu1.execute-api.us-east-1.amazonaws.com/dev"
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+    echo "Usage: $0 <api_base_url> <email> <password>"
+    exit 1
+fi
 
-# Set email and password variables
-# EMAIL="fernando@wpp.sh"
-EMAIL="fgiaretta42@gmail.com"
-PASSWORD="paSsword123#"
-CODE="115376"
-
-signup() {
-    local email="$1"
-    local password="$2"
-    response=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"email\":\"$email\",\"password\":\"$password\"}" "$API_BASE_URL/user/signup")
-    echo "$response"
-}
+API_BASE_URL="$1"
+EMAIL="$2"
+PASSWORD="$3"
 
 login() {
     local email="$1"
@@ -22,36 +15,6 @@ login() {
     response=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"email\":\"$email\",\"password\":\"$password\"}" "$API_BASE_URL/user/login")
     echo "$response"
 }
-
-confirm() {
-    local email="$1"
-    local code="$2"
-    response=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"email\":\"$email\",\"code\":\"$code\"}" "$API_BASE_URL/user/confirm")
-    echo "$response"
-}
-
-mock_invoice='{
-    "invoiceNumber": "INV-2023-002",
-    "client": {
-        "name": "John Doe",
-        "phone": "+1234567890",
-        "email": "johndoe@example.com"
-    },
-    "items": [
-        {
-            "value": 100.00,
-            "description": "Product A",
-            "time": "2023-10-08T12:00:00Z"
-        },
-        {
-            "value": 75.50,
-            "description": "Product B",
-            "time": "2023-10-08T13:30:00Z"
-        }
-    ],
-    "dueDate": "2023-11-01",
-    "status": "pending"
-}'
 
 create_invoice() {
     local data="$1"
@@ -88,37 +51,53 @@ delete_invoice() {
     echo "$response"
 }
 
-
-echo -e "\n\n\n***************************************\n"
-echo -e "*** Logging in  ***\n"
+# Log in user
 response=$(login "$EMAIL" "$PASSWORD")
 token=$(echo "$response" | jq -r '.token')
 
+# Create mock invoice
+mock_invoice='{
+    "invoiceNumber": "INV-2023-002",
+    "client": {
+        "name": "John Doe",
+        "phone": "+1234567890",
+        "email": "johndoe@example.com"
+    },
+    "items": [
+        {
+            "value": 100.00,
+            "description": "Product A",
+            "time": "2023-10-08T12:00:00Z"
+        },
+        {
+            "value": 75.50,
+            "description": "Product B",
+            "time": "2023-10-08T13:30:00Z"
+        }
+    ],
+    "dueDate": "2023-11-01",
+    "status": "pending"
+}'
 
-
+# Create invoice
+create_response=$(create_invoice "$mock_invoice" "$token")
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Creating new invoice ***\n"
-create_response=$(create_invoice "$mock_invoice" "$token")
 echo "$create_response" | jq
 
-
-
+# List invoices
 list_response=$(list_invoices "$token")
 first_id=$(echo "$list_response" | jq -r '.[0].id')
 count=$(echo "$list_response" | jq length)
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Number of items in list: $count ***"
 
-
-
-
+# Get invoice
 echo -e "\n***************************************\n"
 echo -e "*** Getting invoice with ID: $first_id *** \n"
 get_invoice "$first_id" "$token" | jq
 
-
-
-
+# Update invoice
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Updating invoice with ID: $first_id *** \n"
 update_invoice "$first_id" "$token" '{
@@ -126,16 +105,12 @@ update_invoice "$first_id" "$token" '{
     "dueDate": "2023-12-31"
 }' | jq
 
-
-
-
+# Get updated invoice
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Getting updated invoice with ID: $first_id ***\n"
 get_invoice "$first_id" "$token" | jq
 
-
-
-
+# Delete invoice
 echo -e "\n\n\n***************************************\n"
 echo -e "*** Deleting invoice with ID: $first_id ***\n"
 delete_invoice "$first_id" "$token" | jq

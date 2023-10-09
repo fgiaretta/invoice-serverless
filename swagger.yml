@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: Invoice serverless API
+  description: This API allows users to perform CRUD (Create, Read, Update, Delete) operations on invoices.
+  version: 1.0.0
+servers:
+  - url: https://{your-id}.execute-api.us-east-1.amazonaws.com/dev
+paths:
+  /user/login:
+    post:
+      summary: User Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+  /user/confirm:
+    post:
+      summary: Confirm User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                code:
+                  type: string
+      responses:
+        '200':
+          description: User confirmed successfully
+  /user/signup:
+    post:
+      summary: User Signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User signed up successfully
+  /invoices:
+    post:
+      summary: Create Invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invoiceNumber:
+                  type: string
+                client:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    email:
+                      type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value:
+                        type: number
+                      description:
+                        type: string
+                      time:
+                        type: string
+                dueDate:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Invoice created successfully
+    get:
+      summary: List Invoices
+      responses:
+        '200':
+          description: List of invoices retrieved successfully
+  /invoices/{id}:
+    get:
+      summary: Get Invoice by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invoice retrieved successfully
+    put:
+      summary: Update Invoice by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                dueDate:
+                  type: string
+      responses:
+        '200':
+          description: Invoice updated successfully
+    delete:
+      summary: Delete Invoice by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invoice deleted successfully
